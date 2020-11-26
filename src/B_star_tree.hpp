@@ -81,6 +81,7 @@ struct B_star_tree {
 
 struct BaseOperatorLog {
   virtual void undo() = 0;
+  virtual ~BaseOperatorLog() {}
 };
 
 struct SwapSubtreeLog : public BaseOperatorLog {

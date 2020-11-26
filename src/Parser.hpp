@@ -58,11 +58,11 @@ struct Parser {
         ss >> name >> size;
         nets.emplace_back();
         while (size--) {
-          ss >> name;
-          if (str2hd.count(name)) {
-            nets.back().hardrectilinears.emplace_back(str2hd.at(name));
-          } else if (str2ter.count(name)) {
-            nets.back().terminals.emplace_back(str2ter.at(name));
+          std::getline(fin, buff);
+          if (str2hd.count(buff)) {
+            nets.back().hardrectilinears.emplace_back(str2hd.at(buff));
+          } else if (str2ter.count(buff)) {
+            nets.back().terminals.emplace_back(str2ter.at(buff));
           } else {
             // error!
           }

@@ -2,6 +2,7 @@
 #include "Input.hpp"
 #include "Nodes.hpp"
 #include <cmath>
+#include <fstream>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -68,5 +69,15 @@ struct Middle {
       maxH = std::max(maxH, (long long)(nd.y + nd.getHeight()));
     }
     return std::make_pair(maxW, maxH);
+  }
+  void output_to_file(const std::string &filePath) {
+    std::ofstream fout(filePath);
+    fout << "Wirelength " << HPWL() << '\n';
+    fout << "Blocks" << '\n';
+    for (const auto &hb : hardblocks) {
+      fout << hb.name << ' ' << hb.x << ' ' << hb.y << ' ' << hb.rotated
+           << '\n';
+    }
+    fout.close();
   }
 };
