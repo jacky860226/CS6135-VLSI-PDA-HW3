@@ -13,8 +13,8 @@ int main(int argc, char *argv[]) {
   RandomTreeInitializer randomTreeInitializer(7122);
   auto b_star_tree = randomTreeInitializer.createTree(*middle);
 
-  SimulatedAnnealing SA(1.1, 1e-9, 0.85, 7, 7122 * 7122);
-  SA.solve(b_star_tree, 7122 * 7122.0);
+  SimulatedAnnealing SA(1.1, 1e-9, 0.99, 7, 7122);
+  SA.solve(b_star_tree, 7122.0);
 
   std::cout << "......" << middle->width_height << '\n';
   auto xy = middle->maxBondary();

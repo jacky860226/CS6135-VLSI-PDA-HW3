@@ -7,7 +7,6 @@ double CostInClass(Middle &middle) {
   auto outline = middle.maxBondary_in_tree();
   double widthCost = std::max(outline.first - middle.width_height, 0LL);
   double heightCost = std::max(outline.second - middle.width_height, 0LL);
-  return alpha * ((widthCost + 1) * (heightCost + 1)) +
-         beta * middle.HPWL_in_tree();
+  return alpha * (widthCost + heightCost) + beta * middle.HPWL_in_tree();
 }
 }; // namespace CostFunction

@@ -78,6 +78,6 @@ struct SimulatedAnnealing {
         }
       } while (!(uphill > N || MT > 2 * N));
       T = R * T;
-    } while (!(reject > MT * 0.95 || T < Eps || GlobalTimer::overTime()));
+    } while (!(/*reject > MT * 0.95 ||*/ T < Eps || GlobalTimer::overTime()));
   }
 };
