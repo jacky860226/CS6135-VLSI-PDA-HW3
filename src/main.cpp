@@ -1,5 +1,6 @@
 #include "GlobalTimer.hpp"
 #include "Parser.hpp"
+#include "SimulatedAnnealing.hpp"
 #include "TreeInitializer.hpp"
 #include <iostream>
 
@@ -11,8 +12,10 @@ int main(int argc, char *argv[]) {
   auto middle = parser.parse(argv[1], argv[2], argv[3], argv[5]);
   RandomTreeInitializer randomTreeInitializer(7122);
   auto b_star_tree = randomTreeInitializer.createTree(*middle);
-  b_star_tree.traceRectPosition();
-  middle->updateAns();
+
+  SimulatedAnnealing SA(1.1, 1e-9, 0.85, 7, 7122 * 7122);
+  SA.solve(b_star_tree, 7122 * 7122.0);
+
   std::cout << "......" << middle->width_height << '\n';
   auto xy = middle->maxBondary();
   std::cout << ".." << xy.first << ' ' << xy.second << '\n';

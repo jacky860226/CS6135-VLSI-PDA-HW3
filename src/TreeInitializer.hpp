@@ -24,6 +24,9 @@ struct RandomTreeInitializer : public BaseTreeInitializer {
     nodes = &middle.nodes;
     B_star_tree res;
     res.root = dfs(0, int(nodes->size()) - 1);
+    res.middle = &middle;
+    res.traceRectPosition();
+    middle.updateAns();
     return res;
   }
   RandomTreeInitializer(size_t seed = 7122) : MT(seed) {}

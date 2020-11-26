@@ -42,12 +42,6 @@ struct Hardrectilinear : public Point, public Center {
     int yLD = std::max(y, b.y);
     int xRU = std::min(x + getWidth(), b.x + b.getWidth());
     int yRU = std::min(y + getHeight(), b.y + b.getHeight());
-    if (xLD < xRU && yLD < yRU) {
-      std::cout << x << ' ' << y << ',' << x + getWidth() << ' '
-                << y + getHeight() << '\n';
-      std::cout << b.x << ' ' << b.y << ',' << b.x + b.getWidth() << ' '
-                << b.y + b.getHeight() << '\n';
-    }
     return xLD < xRU && yLD < yRU;
   }
 };

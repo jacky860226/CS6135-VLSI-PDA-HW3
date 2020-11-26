@@ -29,7 +29,6 @@ struct LinkListNode : public BaseNode {
 };
 
 struct Node : public LinkListNode {
-  Node *lc, *rc, **pa;
-  Node(Hardrectilinear *rect)
-      : LinkListNode(rect), lc(nullptr), rc(nullptr), pa(nullptr) {}
+  Node *lc, *rc;
+  Node(Hardrectilinear *rect) : LinkListNode(rect), lc(nullptr), rc(nullptr) {}
 };

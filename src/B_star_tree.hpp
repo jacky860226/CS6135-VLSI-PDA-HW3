@@ -1,10 +1,12 @@
 #pragma once
+#include "Middle.hpp"
 #include "Nodes.hpp"
 #include <algorithm>
 #include <vector>
 
 struct B_star_tree {
   Node *root;
+  Middle *middle;
 
   int insertContour(LinkListNode *cur, LinkListNode *cur_prev,
                     LinkListNode *cur_next) {
@@ -47,12 +49,14 @@ struct B_star_tree {
   void getPosition(Node *cur, Node **forbidden, bool acceptEmpty) {
     if (cur == nullptr)
       return;
-    if (&cur->lc != forbidden && (acceptEmpty || cur->lc)) {
-      position.emplace_back(&cur->lc);
+    if (&cur->lc != forbidden) {
+      if (!acceptEmpty == bool(cur->lc))
+        position.emplace_back(&cur->lc);
       getPosition(cur->lc, forbidden, acceptEmpty);
     }
-    if (&cur->rc != forbidden && (acceptEmpty || cur->rc)) {
-      position.emplace_back(&cur->rc);
+    if (&cur->rc != forbidden) {
+      if (!acceptEmpty == bool(cur->rc))
+        position.emplace_back(&cur->rc);
       getPosition(cur->rc, forbidden, acceptEmpty);
     }
   }
@@ -65,11 +69,38 @@ struct B_star_tree {
   }
   void traceRectPosition() { dfs(root, nullptr, 0, 'R'); }
   void swap_subtree(Node **a, Node **b) { std::swap(*a, *b); }
-  void swap_node(Node **a, Node **b) {
-    std::swap(*a, *b);
-    std::swap((*a)->lc, (*b)->lc);
-    std::swap((*a)->rc, (*b)->rc);
-    std::swap((*a)->pa, (*b)->pa);
+  void swap_node(Node *a, Node *b) {
+    std::swap(a->rect, b->rect);
+    std::swap(a->rotated, b->rotated);
+    std::swap(a->x, b->x);
+    std::swap(a->y, b->y);
+    std::swap(middle->nodeMap[a->rect], middle->nodeMap[b->rect]);
   }
   void rotate_node(Node *a) { a->rotated = !a->rotated; }
+};
+
+struct BaseOperatorLog {
+  virtual void undo() = 0;
+};
+
+struct SwapSubtreeLog : public BaseOperatorLog {
+  B_star_tree tree;
+  Node **a;
+  Node **b;
+  SwapSubtreeLog(B_star_tree tree, Node **a, Node **b)
+      : tree(tree), a(a), b(b) {}
+  void undo() override { tree.swap_subtree(a, b); }
+};
+struct SwapNodeLog : public BaseOperatorLog {
+  B_star_tree tree;
+  Node *a;
+  Node *b;
+  SwapNodeLog(B_star_tree tree, Node *a, Node *b) : tree(tree), a(a), b(b) {}
+  void undo() override { tree.swap_node(a, b); }
+};
+struct RotateNodeLog : public BaseOperatorLog {
+  B_star_tree tree;
+  Node *a;
+  RotateNodeLog(B_star_tree tree, Node *a) : tree(tree), a(a) {}
+  void undo() override { tree.rotate_node(a); }
 };
