@@ -8,6 +8,11 @@ int main(int argc, char *argv[]) {
   // ./hw3 *.hardblocks *.nets *.pl *.floorplan dead_space_ratio
   GlobalTimer::setTimeLimit(std::chrono::seconds(60 * 15));
 
+  if (argc <= 5) {
+    std::cerr << "Argument Error!\n";
+    return -1;
+  }
+
   Parser parser;
   auto middle = parser.parse(argv[1], argv[2], argv[3], argv[5]);
   RandomTreeInitializer randomTreeInitializer(7122);
@@ -26,7 +31,5 @@ int main(int argc, char *argv[]) {
 
   middle->output_to_file(argv[4]);
 
-  if (GlobalTimer::overTime())
-    return 0;
   return 0;
 }
