@@ -4,7 +4,10 @@
 #include "GlobalTimer.hpp"
 #include "Middle.hpp"
 #include <cmath>
+#include <limits>
 #include <random>
+
+#include <stdio.h>
 
 struct SimulatedAnnealing {
   const double P;
@@ -13,9 +16,11 @@ struct SimulatedAnnealing {
   const int K;
 
   std::mt19937 randomGen;
+  CostFunctionBase *costFunc;
 
-  SimulatedAnnealing(double P, double Eps, double R, int K, size_t seed)
-      : P(P), Eps(Eps), R(R), K(K), randomGen(seed) {}
+  SimulatedAnnealing(double P, double Eps, double R, int K, size_t seed,
+                     CostFunctionBase *costFunc)
+      : P(P), Eps(Eps), R(R), K(K), randomGen(seed), costFunc(costFunc) {}
 
   BaseOperatorLog *randomMove(B_star_tree tree, size_t SwapSubtreeVal,
                               size_t SwapNodeVal, size_t RotateNodeVal) {
@@ -24,9 +29,9 @@ struct SimulatedAnnealing {
     std::uniform_int_distribution<size_t> moveVal(0, total - 1);
     size_t val = moveVal(randomGen);
     if (val < SwapSubtreeVal) {
-      auto posArr = tree.getPosition();
+      const auto &posArr = tree.getPosition();
       auto a = posArr.at(randomGen() % posArr.size());
-      posArr = tree.getPosition(a, true);
+      tree.getPosition(a, true);
       auto b = posArr.at(randomGen() % posArr.size());
       tree.swap_subtree(a, b);
       return new SwapSubtreeLog(tree, a, b);
@@ -45,13 +50,18 @@ struct SimulatedAnnealing {
     }
   }
 
-  void solve(B_star_tree tree, double delta_avg) {
+  double solve(B_star_tree tree, double delta_avg, double reject_rate) {
     int N = tree.middle->nodes.size() * K;
     int MT, uphill, reject;
     double T = delta_avg / std::log(P);
-    double cur_cost = CostFunction::CostInClass(*tree.middle);
-    double best_cost = cur_cost;
+    double cur_cost = (*costFunc)(*tree.middle);
+    int best_cost = std::numeric_limits<int>::max();
+    costFunc->calCurCost(*tree.middle);
+    if (costFunc->inRange(*tree.middle))
+      best_cost = costFunc->HPWL;
     std::uniform_real_distribution<double> distribution(0, 1);
+    double delta_avg_cal = 0;
+    int total_uphill = 0;
     do {
       MT = 0;
       uphill = 0;
@@ -60,15 +70,18 @@ struct SimulatedAnnealing {
         BaseOperatorLog *operatorLog = randomMove(tree, 1, 1, 1);
         tree.traceRectPosition();
         ++MT;
-        double next_cost = CostFunction::CostInClass(*tree.middle);
+        double next_cost = (*costFunc)(*tree.middle);
         double delta_cost = next_cost - cur_cost;
         if (delta_cost <= 0 ||
             distribution(randomGen) < std::exp(-delta_cost / T)) {
-          if (delta_cost > 0)
+          if (delta_cost > 0) {
             ++uphill;
+            ++total_uphill;
+            delta_avg_cal += delta_cost;
+          }
           cur_cost = next_cost;
-          if (cur_cost < best_cost) {
-            best_cost = cur_cost;
+          if (costFunc->inRange(*tree.middle) && costFunc->HPWL < best_cost) {
+            best_cost = costFunc->HPWL;
             tree.middle->updateAns();
           }
         } else {
@@ -78,6 +91,8 @@ struct SimulatedAnnealing {
         delete operatorLog;
       } while (!(uphill > N || MT > 2 * N));
       T = R * T;
-    } while (!(/*reject > MT * 0.95 ||*/ T < Eps || GlobalTimer::overTime()));
+    } while (
+        !(reject >= MT * reject_rate || T < Eps || GlobalTimer::overTime()));
+    return delta_avg_cal / total_uphill;
   }
 };

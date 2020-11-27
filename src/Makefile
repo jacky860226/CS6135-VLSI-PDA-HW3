@@ -24,11 +24,11 @@ endif
 
 test: $(TARGET)
 	@echo test on case $(TEST_CASE_ID) 0.1
-	/usr/bin/time -p ./$(TARGET)  ../testcase/$(TEST_CASE_ID).hardblocks ../testcase/$(TEST_CASE_ID).nets ../testcase/$(TEST_CASE_ID).pl ../output/$(TEST_CASE_ID).floorplan 0.1
-	../verifier/verify ../testcase/$(TEST_CASE_ID).hardblocks ../testcase/$(TEST_CASE_ID).nets ../testcase/$(TEST_CASE_ID).pl ../output/$(TEST_CASE_ID).floorplan 0.1
+	/usr/bin/time -p ./$(TARGET)  ../testcase/$(TEST_CASE_ID).hardblocks ../testcase/$(TEST_CASE_ID).nets ../testcase/$(TEST_CASE_ID).pl ../output/$(TEST_CASE_ID).1.floorplan 0.1
+	../verifier/verify ../testcase/$(TEST_CASE_ID).hardblocks ../testcase/$(TEST_CASE_ID).nets ../testcase/$(TEST_CASE_ID).pl ../output/$(TEST_CASE_ID).1.floorplan 0.1
 	@echo test on case $(TEST_CASE_ID) 0.15
-	/usr/bin/time -p ./$(TARGET)  ../testcase/$(TEST_CASE_ID).hardblocks ../testcase/$(TEST_CASE_ID).nets ../testcase/$(TEST_CASE_ID).pl ../output/$(TEST_CASE_ID).floorplan 0.15
-	../verifier/verify ../testcase/$(TEST_CASE_ID).hardblocks ../testcase/$(TEST_CASE_ID).nets ../testcase/$(TEST_CASE_ID).pl ../output/$(TEST_CASE_ID).floorplan 0.15
+	/usr/bin/time -p ./$(TARGET)  ../testcase/$(TEST_CASE_ID).hardblocks ../testcase/$(TEST_CASE_ID).nets ../testcase/$(TEST_CASE_ID).pl ../output/$(TEST_CASE_ID).15.floorplan 0.15
+	../verifier/verify ../testcase/$(TEST_CASE_ID).hardblocks ../testcase/$(TEST_CASE_ID).nets ../testcase/$(TEST_CASE_ID).pl ../output/$(TEST_CASE_ID).15.floorplan 0.15
 
 .PHONY: all clean test
 -include $(DEPS)

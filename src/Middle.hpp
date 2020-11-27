@@ -19,7 +19,7 @@ struct Middle {
          std::vector<Net> &&NT, double dead_space_ratio)
       : hardblocks(std::move(HB)), terminals(std::move(TM)),
         nets(std::move(NT)) {
-    long long total_area = 0;
+    int total_area = 0;
     for (const auto &hb : hardblocks)
       total_area += hb.width * hb.height;
     width_height = std::sqrt(total_area * (1 + dead_space_ratio));
@@ -42,31 +42,31 @@ struct Middle {
     for (auto &nd : nodes)
       nd.updateAns();
   }
-  long long HPWL() const {
-    long long ans = 0;
+  int HPWL() const {
+    int ans = 0;
     for (const auto &nt : nets)
       ans += nt.HPWL();
     return ans;
   }
-  long long HPWL_in_tree() const {
-    long long ans = 0;
+  int HPWL_in_tree() const {
+    int ans = 0;
     for (const auto &nt : nets)
       ans += nt.HPWL_in_tree(nodeMap);
     return ans;
   }
-  std::pair<long long, long long> maxBondary() const {
-    long long maxW = 0, maxH = 0;
+  std::pair<int, int> maxBondary() const {
+    int maxW = 0, maxH = 0;
     for (const auto &hd : hardblocks) {
-      maxW = std::max(maxW, (long long)(hd.x + hd.getWidth()));
-      maxH = std::max(maxH, (long long)(hd.y + hd.getHeight()));
+      maxW = std::max(maxW, (int)(hd.x + hd.getWidth()));
+      maxH = std::max(maxH, (int)(hd.y + hd.getHeight()));
     }
     return std::make_pair(maxW, maxH);
   }
-  std::pair<long long, long long> maxBondary_in_tree() const {
-    long long maxW = 0, maxH = 0;
+  std::pair<int, int> maxBondary_in_tree() const {
+    int maxW = 0, maxH = 0;
     for (const auto &nd : nodes) {
-      maxW = std::max(maxW, (long long)(nd.x + nd.getWidth()));
-      maxH = std::max(maxH, (long long)(nd.y + nd.getHeight()));
+      maxW = std::max(maxW, (int)(nd.x + nd.getWidth()));
+      maxH = std::max(maxH, (int)(nd.y + nd.getHeight()));
     }
     return std::make_pair(maxW, maxH);
   }

@@ -61,11 +61,11 @@ struct B_star_tree {
     }
   }
 
-  std::vector<Node **> &&getPosition(Node **forbidden = nullptr,
-                                     bool acceptEmpty = false) {
-    position = std::vector<Node **>();
+  const std::vector<Node **> &getPosition(Node **forbidden = nullptr,
+                                          bool acceptEmpty = false) {
+    position.clear();
     getPosition(root, forbidden, acceptEmpty);
-    return std::move(position);
+    return position;
   }
   void traceRectPosition() { dfs(root, nullptr, 0, 'R'); }
   void swap_subtree(Node **a, Node **b) { std::swap(*a, *b); }
