@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]) {
   // ./hw3 *.hardblocks *.nets *.pl *.floorplan dead_space_ratio
-  GlobalTimer::setTimeLimit(std::chrono::seconds(60 * 15));
+  GlobalTimer::setTimeLimit(std::chrono::seconds(60 * 18));
 
   if (argc <= 5) {
     std::cerr << "Argument Error!\n";
@@ -15,8 +15,12 @@ int main(int argc, char *argv[]) {
 
   Parser parser;
   auto middle = parser.parse(argv[1], argv[2], argv[3], argv[5]);
+  auto inputDuration = GlobalTimer::getDuration();
+
   RandomTreeInitializer randomTreeInitializer(7122);
   auto b_star_tree = randomTreeInitializer.createTree(*middle);
+  auto buildTreeDuration = GlobalTimer::getDuration();
+
   std::cout << "Start" << std::endl;
 
   N100_Cost n100_Cost;
@@ -43,13 +47,14 @@ int main(int argc, char *argv[]) {
     } else {
       reject_rate = 0.9974;
       delta_avg = 2217.2;
-      seed = 4; // 4
+      seed = 4;
       Eps = 0.001;
     }
   }
 
   SimulatedAnnealing SA(P, Eps, R, K, seed, costFunction);
   auto delta = SA.solve(b_star_tree, delta_avg, reject_rate);
+  auto SADuration = GlobalTimer::getDuration();
 
   std::cout << "Delta AVG: " << delta << '\n';
   std::cout << "......" << middle->width_height << '\n';
@@ -58,8 +63,21 @@ int main(int argc, char *argv[]) {
             << '\n';
 
   middle->output_to_file(argv[4]);
+  auto outputDuration = GlobalTimer::getDuration();
+
+  auto inputTime = inputDuration.count();
+  auto buildTreeTime = (buildTreeDuration - inputDuration).count();
+  auto SATime = (SADuration - buildTreeDuration).count();
+  auto outputTime = (outputDuration - SADuration).count();
+
+  std::cout << "inputTime: " << inputTime / 1e9 << '\n';
+  std::cout << "buildTreeTime: " << buildTreeTime / 1e9 << '\n';
+  std::cout << "SATime: " << SATime / 1e9 << '\n';
+  std::cout << "outputTime: " << outputTime / 1e9 << '\n';
+  std::cout << "totalTime: " << outputDuration.count() / 1e9 << '\n';
 
   if (GlobalTimer::overTime())
-    std::cout << "Time!!!\n";
+    std::cout << "overTime!!!\n";
+  std::cout << "\n";
   return 0;
 }

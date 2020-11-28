@@ -5,6 +5,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <unordered_map>
 
 struct Parser {
@@ -96,8 +97,11 @@ struct Parser {
     str2hd.clear();
     str2ter.clear();
 
-    readPL(plFile);
-    readHardblocks(hardblocksFile);
+    std::thread readPLThread(&Parser::readPL, this, plFile);
+    std::thread readHardblocksThread(&Parser::readHardblocks, this,
+                                     hardblocksFile);
+    readPLThread.join();
+    readHardblocksThread.join();
     readNets(netsFile);
     return std::make_shared<Middle>(std::move(hardblocks), std::move(terminals),
                                     std::move(nets),
