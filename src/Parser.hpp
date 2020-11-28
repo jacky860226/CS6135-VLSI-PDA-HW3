@@ -90,18 +90,25 @@ struct Parser {
   std::shared_ptr<Middle> parse(const std::string &hardblocksFile,
                                 const std::string &netsFile,
                                 const std::string &plFile,
-                                const std::string &dead_space_ratio) {
+                                const std::string &dead_space_ratio,
+                                bool multi_thread_read) {
     hardblocks.clear();
     terminals.clear();
     nets.clear();
     str2hd.clear();
     str2ter.clear();
 
-    std::thread readPLThread(&Parser::readPL, this, plFile);
-    std::thread readHardblocksThread(&Parser::readHardblocks, this,
-                                     hardblocksFile);
-    readPLThread.join();
-    readHardblocksThread.join();
+    if (multi_thread_read) {
+      std::thread readPLThread(&Parser::readPL, this, plFile);
+      std::thread readHardblocksThread(&Parser::readHardblocks, this,
+                                       hardblocksFile);
+      readPLThread.join();
+      readHardblocksThread.join();
+    } else {
+      readPL(plFile);
+      readHardblocks(hardblocksFile);
+    }
+
     readNets(netsFile);
     return std::make_shared<Middle>(std::move(hardblocks), std::move(terminals),
                                     std::move(nets),

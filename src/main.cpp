@@ -13,8 +13,14 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
+  bool multi_thread_read = true;
+  if (argc > 6) {
+    multi_thread_read = std::atoi(argv[6]);
+  }
+
   Parser parser;
-  auto middle = parser.parse(argv[1], argv[2], argv[3], argv[5]);
+  auto middle =
+      parser.parse(argv[1], argv[2], argv[3], argv[5], multi_thread_read);
   auto inputDuration = GlobalTimer::getDuration();
 
   RandomTreeInitializer randomTreeInitializer(7122);
